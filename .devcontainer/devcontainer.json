@@ -1,0 +1,41 @@
+{
+  "name": "HajjSystem Dev Container (Hot Reload)",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "ms-azuretools.vscode-docker",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "ms-vscode.makefile-tools"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "dotnet.server.useOmnisharp": false
+      }
+    }
+  },
+
+  "forwardPorts": [5264, 7074],
+  "portsAttributes": {
+    "5264": {
+      "label": "API (Hot Reload)",
+      "onAutoForward": "openBrowser"
+    },
+    "7074": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    }
+  },
+
+  "postCreateCommand": "dotnet restore",
+  "postStartCommand": "cd /workspace/Sources/HajjSystem.Webapi && dotnet watch run --no-launch-profile --non-interactive > /tmp/dotnet-watch.log 2>&1 &",
+  
+  "remoteUser": "vscode"
+}
