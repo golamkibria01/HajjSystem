@@ -1,49 +1,74 @@
+using static BCrypt.Net.BCrypt;
 using HajjSystem.Data.Repositories;
 using HajjSystem.Models.Entities;
+using HajjSystem.Models.Models;
 
 namespace HajjSystem.Services.Services;
 
 public class UserService : IUserService
 {
     private readonly IUserRepository _repository;
+    private readonly ICompanyRepository _companyRepository;
 
-    public UserService(IUserRepository repository)
+    public UserService(IUserRepository repository, ICompanyRepository companyRepository)
     {
         _repository = repository;
+        _companyRepository = companyRepository;
     }
 
-    public async Task<IEnumerable<User>> GetAllAsync()
+    public async Task<string> CreateCustomerAsync(CustomerUserCreationModel model)
     {
-        return await _repository.GetAllAsync();
+        var entity = new User
+        {
+            FirstName = model.FirstName,
+            MiddleName = model.MiddleName,
+            LastName = model.LastName,
+            Username = model.Username,
+            Password = HashPassword(model.Password),
+            Email = model.Email,
+            UserType = UserType.Customer,
+            SeasonId = model.SeasonId
+        };
+
+        await _repository.CreateAsync(entity);
+
+        return "User created successfully";
     }
 
-    public async Task<User?> GetByIdAsync(int id)
+    public async Task<string> CreateCompanyUserAsync(CompanyUserCreationModel model)
     {
-        return await _repository.GetByIdAsync(id);
-    }
+        // Check if company with this CrNumber already exists
+        var companyExists = await _companyRepository.ExistsByCrNumberAsync(model.CrNumber);
+        if (companyExists)
+        {
+            return "Company already exists. Please contact with the owner or support center";
+        }
 
-    public async Task<User?> GetByUsernameAsync(string username)
-    {
-        return await _repository.GetByUsernameAsync(username);
-    }
+        // Create company first
+        var company = new Company
+        {
+            CompanyName = model.CompanyName,
+            CrNumber = model.CrNumber
+        };
 
-    public async Task<User?> GetByEmailAsync(string email)
-    {
-        return await _repository.GetByEmailAsync(email);
-    }
+        var createdCompany = await _companyRepository.AddAsync(company);
 
-    public async Task<User> CreateAsync(User user)
-    {
-        return await _repository.AddAsync(user);
-    }
+        // Create user with company reference
+        var user = new User
+        {
+            FirstName = model.FirstName,
+            MiddleName = model.MiddleName,
+            LastName = model.LastName,
+            Username = model.Username,
+            Password = HashPassword(model.Password),
+            Email = model.Email,
+            UserType = UserType.CompanyUser,
+            CompanyId = createdCompany.Id,
+            SeasonId = model.SeasonId
+        };
 
-    public async Task UpdateAsync(User user)
-    {
-        await _repository.UpdateAsync(user);
-    }
+        await _repository.CreateAsync(user);
 
-    public async Task DeleteAsync(int id)
-    {
-        await _repository.DeleteAsync(id);
+        return "Company registered successfully";
     }
 }

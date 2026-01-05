@@ -16,86 +16,21 @@ public class UserController : ControllerBase
         _service = service;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var items = await _service.GetAllAsync();
-        return Ok(items);
-    }
-
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var item = await _service.GetByIdAsync(id);
-        if (item is null) return NotFound();
-        return Ok(item);
-    }
-
-    [HttpGet("username/{username}")]
-    public async Task<IActionResult> GetByUsername(string username)
-    {
-        var item = await _service.GetByUsernameAsync(username);
-        if (item is null) return NotFound();
-        return Ok(item);
-    }
-
-    [HttpGet("email/{email}")]
-    public async Task<IActionResult> GetByEmail(string email)
-    {
-        var item = await _service.GetByEmailAsync(email);
-        if (item is null) return NotFound();
-        return Ok(item);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] UserCreateModel model)
+    [HttpPost("customer")]
+    public async Task<IActionResult> CreateCustomer([FromBody] CustomerUserCreationModel model)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var entity = new User
-        {
-            FirstName = model.FirstName,
-            MiddleName = model.MiddleName,
-            LastName = model.LastName,
-            Username = model.Username,
-            Password = model.Password,
-            CompanyId = model.CompanyId,
-            Role = model.Role,
-            UserType = model.UserType,
-            Address = model.Address,
-            City = model.City,
-            Country = model.Country,
-            Passport = model.Passport,
-            PassportValidity = model.PassportValidity,
-            Mobile = model.Mobile,
-            Email = model.Email,
-            SeasonId = model.SeasonId
-        };
-
-        var created = await _service.CreateAsync(entity);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        var result = await _service.CreateCustomerAsync(model);
+        return Ok(new { message = result });
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] User user)
+    [HttpPost("company")]
+    public async Task<IActionResult> CreateCompanyUser([FromBody] CompanyUserCreationModel model)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
-        if (user.Id != id) return BadRequest("Id mismatch.");
 
-        var exists = await _service.GetByIdAsync(id);
-        if (exists is null) return NotFound();
-
-        await _service.UpdateAsync(user);
-        return NoContent();
-    }
-
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var exists = await _service.GetByIdAsync(id);
-        if (exists is null) return NotFound();
-
-        await _service.DeleteAsync(id);
-        return NoContent();
+        var result = await _service.CreateCompanyUserAsync(model);
+        return Ok(new { message = result });
     }
 }
