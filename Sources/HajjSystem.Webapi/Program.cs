@@ -24,6 +24,8 @@ option.UseNpgsql(builder.Configuration.GetConnectionString("HajjSystemConnection
 // Repositories & services
 builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

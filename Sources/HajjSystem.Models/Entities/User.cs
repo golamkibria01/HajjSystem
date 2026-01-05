@@ -1,0 +1,27 @@
+namespace HajjSystem.Models.Entities;
+
+public class User
+{
+    public int Id { get; set; }
+    public string? FirstName { get; set; } = string.Empty;
+    public string? MiddleName { get; set; }
+    public string? LastName { get; set; } = string.Empty;
+    public string Username { get; set; }
+    public string Password { get; set; }
+    public int? CompanyId { get; set; }
+    public UserType UserType { get; set; }
+    public string Address { get; set; } = string.Empty;
+    public string City { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    public string Passport { get; set; } = string.Empty;
+    public DateTime PassportValidity { get; set; }
+    public string Mobile { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public int? SeasonId { get; set; }
+}
+
+public enum UserType
+{
+    Customer,
+    CompanyUser
+}
