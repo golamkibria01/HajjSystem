@@ -9,11 +9,15 @@ public class UserService : IUserService
 {
     private readonly IUserRepository _repository;
     private readonly ICompanyRepository _companyRepository;
+    private readonly IUserRoleRepository _userRoleRepository;
+    private readonly IRoleRepository _roleRepository;
 
-    public UserService(IUserRepository repository, ICompanyRepository companyRepository)
+    public UserService(IUserRepository repository, ICompanyRepository companyRepository, IUserRoleRepository userRoleRepository, IRoleRepository roleRepository)
     {
         _repository = repository;
         _companyRepository = companyRepository;
+        _userRoleRepository = userRoleRepository;
+        _roleRepository = roleRepository;
     }
 
     public async Task<string> CreateCustomerAsync(CustomerUserCreationModel model)
@@ -30,7 +34,18 @@ public class UserService : IUserService
             SeasonId = model.SeasonId
         };
 
-        await _repository.CreateAsync(entity);
+        var createdUser = await _repository.CreateAsync(entity);
+        
+        // Find and assign Customer role
+        var customerRole = await _roleRepository.GetByNameAsync("Customer");
+        if (customerRole != null)
+        {
+            await _userRoleRepository.AddAsync(new UserRole
+            {
+                UserId = createdUser.Id,
+                RoleId = customerRole.Id
+            });
+        }
 
         return "User created successfully";
     }
