@@ -33,4 +33,26 @@ public class UserController : ControllerBase
         var result = await _service.CreateCompanyUserAsync(model);
         return Ok(new { message = result });
     }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginModel model)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        var user = await _service.LoginAsync(model);
+        
+        if (user == null)
+        {
+            return Unauthorized(new { message = "Invalid username or password" });
+        }
+
+        // Remove password from response
+        user.Password = string.Empty;
+        
+        return Ok(new 
+        { 
+            message = "Login successful",
+            user = user
+        });
+    }
 }

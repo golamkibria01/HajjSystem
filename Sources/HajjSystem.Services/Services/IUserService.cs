@@ -7,4 +7,5 @@ public interface IUserService
 {
     Task<string> CreateCustomerAsync(CustomerUserCreationModel model);
     Task<string> CreateCompanyUserAsync(CompanyUserCreationModel model);
+    Task<User?> LoginAsync(LoginModel model);
 }

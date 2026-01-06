@@ -71,4 +71,24 @@ public class UserService : IUserService
 
         return "Company registered successfully";
     }
+
+    public async Task<User?> LoginAsync(LoginModel model)
+    {
+        var user = await _repository.GetByUsernameAsync(model.Username);
+        
+        if (user == null)
+        {
+            return null;
+        }
+
+        // Verify password using BCrypt
+        bool isPasswordValid = Verify(model.Password, user.Password);
+        
+        if (!isPasswordValid)
+        {
+            return null;
+        }
+
+        return user;
+    }
 }

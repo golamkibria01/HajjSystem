@@ -31,5 +31,12 @@ Content-Type: application/json
   "crNumber": "1234567895",
   "seasonId": 1
 }
+### Login User
+POST {{HajjSystem_Webapi_HostAddress}}/api/user/login
+Content-Type: application/json
 
+{
+  "username": "ahmed.ali",
+  "password": "SecurePassword123"
+}
 ###

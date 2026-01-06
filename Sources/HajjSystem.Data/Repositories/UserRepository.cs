@@ -18,4 +18,13 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
         return entry.Entity;
     }
+
+    public async Task<User?> GetByUsernameAsync(string username)
+    {
+        return await _context.Users
+            .Include(u => u.Company)
+            .Include(u => u.Season)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Username == username);
+    }
 }
