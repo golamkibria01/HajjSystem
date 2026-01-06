@@ -1,7 +1,13 @@
 using HajjSystem.Models.Entities;
 using HajjSystem.Models.Models;
 using HajjSystem.Services.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.Data;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace HajjSystem.Webapi.Controllers;
 
@@ -16,6 +22,7 @@ public class UserController : ControllerBase
         _service = service;
     }
 
+    [Authorize(Roles = "Admin,Customer")]
     [HttpPost("customer")]
     public async Task<IActionResult> CreateCustomer([FromBody] CustomerUserCreationModel model)
     {
@@ -25,6 +32,7 @@ public class UserController : ControllerBase
         return Ok(new { message = result });
     }
 
+    [Authorize(Roles = "Admin,Company")]
     [HttpPost("company")]
     public async Task<IActionResult> CreateCompanyUser([FromBody] CompanyUserCreationModel model)
     {
@@ -48,11 +56,41 @@ public class UserController : ControllerBase
 
         // Remove password from response
         user.Password = string.Empty;
-        
+
+        //get user roles from DB by user_id
+        List<string> Roles = new List<string> { "Admin", "Company", "Customer" };
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.Username),
+        };
+
+        foreach (var role in Roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes("THIS_IS_MY_SUPER_SECRET_KEY"));
+
+        var token = new JwtSecurityToken(
+            issuer: "myapi",
+            audience: "myclient",
+            claims: claims,
+            expires: DateTime.Now.AddHours(1),
+            signingCredentials:
+                new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+        );
+
+        var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+
+
         return Ok(new 
         { 
             message = "Login successful",
-            user = user
+            user = user,
+            token = jwtToken
         });
     }
 }
