@@ -47,27 +47,23 @@ public class UserController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var user = await _service.LoginAsync(model);
+        var loginResponse = await _service.LoginAsync(model);
         
-        if (user == null)
+        if (loginResponse == null)
         {
             return Unauthorized(new { message = "Invalid username or password" });
         }
 
-        // Remove password from response
-        user.Password = string.Empty;
-
-        //get user roles from DB by user_id
-        List<string> Roles = new List<string> { "Admin", "Company", "Customer" };
-
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Name, loginResponse.Username),
+            new Claim(ClaimTypes.NameIdentifier, loginResponse.UserId.ToString()),
+            new Claim("SeasonId", loginResponse.SeasonId.ToString())
         };
 
-        foreach (var role in Roles)
+        foreach (var roleName in loginResponse.Roles)
         {
-            claims.Add(new Claim(ClaimTypes.Role, role));
+            claims.Add(new Claim(ClaimTypes.Role, roleName));
         }
 
         var key = new SymmetricSecurityKey(
@@ -84,12 +80,14 @@ public class UserController : ControllerBase
 
         var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-
-
         return Ok(new 
         { 
             message = "Login successful",
-            user = user,
+            userId = loginResponse.UserId,
+            username = loginResponse.Username,
+            email = loginResponse.Email,
+            userType = loginResponse.UserType,
+            roles = loginResponse.Roles,
             token = jwtToken
         });
     }
