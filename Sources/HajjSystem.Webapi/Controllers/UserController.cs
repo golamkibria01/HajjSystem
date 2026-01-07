@@ -16,7 +16,7 @@ public class UserController : ControllerBase
         _service = service;
     }
 
-    [Authorize(Roles = "Admin,Customer")]
+    [AllowAnonymous]
     [HttpPost("customer")]
     public async Task<IActionResult> CreateCustomer([FromBody] CustomerUserCreationModel model)
     {
@@ -26,7 +26,7 @@ public class UserController : ControllerBase
         return Ok(new { message = result });
     }
 
-    [Authorize(Roles = "Admin,Company")]
+    [AllowAnonymous]
     [HttpPost("company")]
     public async Task<IActionResult> CreateCompanyUser([FromBody] CompanyUserCreationModel model)
     {

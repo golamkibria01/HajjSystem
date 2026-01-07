@@ -19,6 +19,7 @@ public class AuthController : ControllerBase
         _service = service;
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
