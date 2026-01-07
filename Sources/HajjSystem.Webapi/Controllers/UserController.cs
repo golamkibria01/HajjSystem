@@ -80,14 +80,10 @@ public class UserController : ControllerBase
 
         var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-        return Ok(new 
+
+         return Ok(new 
         { 
             message = "Login successful",
-            userId = loginResponse.UserId,
-            username = loginResponse.Username,
-            email = loginResponse.Email,
-            userType = loginResponse.UserType,
-            roles = loginResponse.Roles,
             token = jwtToken
         });
     }
