@@ -1,7 +1,7 @@
 using HajjSystem.Models.Entities;
 using HajjSystem.Models.Models;
 
-namespace HajjSystem.Services.Services;
+namespace HajjSystem.Services.Interfaces;
 
 public interface IUserService
 {

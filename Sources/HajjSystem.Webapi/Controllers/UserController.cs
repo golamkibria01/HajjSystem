@@ -1,5 +1,5 @@
 using HajjSystem.Models.Models;
-using HajjSystem.Services.Services;
+using HajjSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

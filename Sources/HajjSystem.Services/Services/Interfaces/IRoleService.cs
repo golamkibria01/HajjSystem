@@ -1,6 +1,6 @@
 using HajjSystem.Models.Entities;
 
-namespace HajjSystem.Services.Services;
+namespace HajjSystem.Services.Interfaces;
 
 public interface IRoleService
 {

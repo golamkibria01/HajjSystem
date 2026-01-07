@@ -1,6 +1,7 @@
 using HajjSystem.Data;
 using HajjSystem.Data.Repositories;
-using HajjSystem.Services.Services;
+using HajjSystem.Services.Implementations;
+using HajjSystem.Services.Interfaces;
 using HajjSystem.Webapi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;

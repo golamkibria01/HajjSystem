@@ -1,5 +1,5 @@
 using HajjSystem.Models.Entities;
-using HajjSystem.Services.Services;
+using HajjSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HajjSystem.Webapi.Controllers;

@@ -1,7 +1,8 @@
 using HajjSystem.Data.Repositories;
 using HajjSystem.Models.Entities;
+using HajjSystem.Services.Interfaces;
 
-namespace HajjSystem.Services.Services;
+namespace HajjSystem.Services.Implementations;
 
 public class CompanyService : ICompanyService
 {

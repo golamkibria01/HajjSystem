@@ -1,5 +1,5 @@
 using HajjSystem.Models.Models;
-using HajjSystem.Services.Services;
+using HajjSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

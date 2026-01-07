@@ -2,7 +2,7 @@ using HajjSystem.Models.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HajjSystem.Services.Services;
+namespace HajjSystem.Services.Interfaces;
 
 public interface ICompanyService
 {
