@@ -1,6 +1,7 @@
 using HajjSystem.Data;
 using HajjSystem.Data.Repositories;
 using HajjSystem.Services.Services;
+using HajjSystem.Webapi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -65,6 +66,9 @@ builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
 
 var app = builder.Build();
+
+// Global exception handling middleware
+app.UseMiddleware<GlobalExceptionHandler>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
