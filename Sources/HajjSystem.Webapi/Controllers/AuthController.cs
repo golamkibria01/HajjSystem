@@ -37,7 +37,8 @@ public class AuthController : ControllerBase
         {
             new Claim(ClaimTypes.Name, loginResponse.Username),
             new Claim(ClaimTypes.NameIdentifier, loginResponse.UserId.ToString()),
-            new Claim("SeasonId", loginResponse.SeasonId.ToString())
+            new Claim("SeasonId", loginResponse.SeasonId.ToString()),
+            new Claim("UserType", loginResponse.UserType)
         };
 
         foreach (var roleName in loginResponse.Roles)
