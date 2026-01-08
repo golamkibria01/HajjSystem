@@ -1,6 +1,7 @@
 using HajjSystem.Models.Entities;
 using HajjSystem.Models.Models;
 using HajjSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HajjSystem.Webapi.Controllers;
@@ -16,6 +17,7 @@ public class SeasonController : ControllerBase
         _service = service;
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
