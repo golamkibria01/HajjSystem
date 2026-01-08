@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HajjSystem.Webapi.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
+//[ApiController]
+//[Route("api/[controller]")]
 public class RegistrationController : ControllerBase
 {
     private readonly IRegistrationService _service;
