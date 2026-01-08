@@ -33,18 +33,13 @@ public class CompanyController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Company company)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-
         var created = await _service.CreateAsync(company);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        return Ok(created);
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Company company)
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] Company company)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        if (company.Id != id) return BadRequest("Id mismatch.");
-
         var updated = await _service.UpdateAsync(company);
         return Ok(updated);
     }

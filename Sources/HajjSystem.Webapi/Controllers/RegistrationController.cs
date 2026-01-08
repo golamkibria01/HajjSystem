@@ -34,8 +34,6 @@ public class RegistrationController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] RegistrationCreateModel model)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-
         var entity = new Registration
         {
             Name = model.Name,
@@ -43,16 +41,13 @@ public class RegistrationController : ControllerBase
         };
 
         var created = await _service.CreateAsync(entity);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        return Ok(created);
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Registration registration)
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] Registration registration)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        if (registration.Id != id) return BadRequest("Id mismatch.");
-
-        var exists = await _service.GetByIdAsync(id);
+        var exists = await _service.GetByIdAsync(registration.Id);
         if (exists is null) return NotFound();
 
         await _service.UpdateAsync(registration);
