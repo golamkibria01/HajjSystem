@@ -23,6 +23,11 @@ public class RoleService : IRoleService
         return await _repository.GetByIdAsync(id);
     }
 
+    public async Task<Role?> GetByNameAsync(string name)
+    {
+        return await _repository.GetByNameAsync(name);
+    }
+
     public async Task<Role> CreateAsync(Role role)
     {
         return await _repository.AddAsync(role);

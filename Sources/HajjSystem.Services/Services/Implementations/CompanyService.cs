@@ -23,6 +23,11 @@ public class CompanyService : ICompanyService
         return await _repository.GetByIdAsync(id);
     }
 
+    public async Task<bool> ExistsByCrNumberAsync(string crNumber)
+    {
+        return await _repository.ExistsByCrNumberAsync(crNumber);
+    }
+
     public async Task<Company> CreateAsync(Company company)
     {
         return await _repository.AddAsync(company);

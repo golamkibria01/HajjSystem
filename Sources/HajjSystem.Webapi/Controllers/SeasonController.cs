@@ -1,4 +1,5 @@
 using HajjSystem.Models.Entities;
+using HajjSystem.Models.Models;
 using HajjSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,24 +32,64 @@ public class SeasonController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Season season)
+    public async Task<IActionResult> Create([FromBody] SeasonCreateModel model)
     {
+        var season = new Season
+        {
+            Title = model.Title,
+            StartDate = model.StartDate,
+            EndDate = model.EndDate,
+            isCurrent = model.isCurrent
+        };
+        
         var created = await _service.CreateAsync(season);
-        return Ok(created);
+        
+        return Ok(new OperationResponse 
+        { 
+            Status = true, 
+            Message = "Season created successfully" 
+        });
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] Season season)
+    public async Task<IActionResult> Update([FromBody] SeasonUpdateModel model)
     {
+        var season = new Season
+        {
+            Id = model.Id,
+            Title = model.Title,
+            StartDate = model.StartDate,
+            EndDate = model.EndDate,
+            isCurrent = model.isCurrent
+        };
+        
         var updated = await _service.UpdateAsync(season);
-        return Ok(updated);
+        
+        return Ok(new OperationResponse 
+        { 
+            Status = true, 
+            Message = "Season updated successfully" 
+        });
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
         var deleted = await _service.DeleteAsync(id);
-        if (!deleted) return NotFound();
-        return NoContent();
+        
+        if (!deleted)
+        {
+            return Ok(new OperationResponse 
+            { 
+                Status = false, 
+                Message = "Season not found" 
+            });
+        }
+        
+        return Ok(new OperationResponse 
+        { 
+            Status = true, 
+            Message = "Season deleted successfully" 
+        });
     }
 }

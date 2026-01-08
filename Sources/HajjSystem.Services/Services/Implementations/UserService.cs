@@ -10,26 +10,26 @@ namespace HajjSystem.Services.Implementations;
 public class UserService : IUserService
 {
     private readonly IUserRepository _repository;
-    private readonly ICompanyRepository _companyRepository;
-    private readonly IUserRoleRepository _userRoleRepository;
-    private readonly IRoleRepository _roleRepository;
+    private readonly ICompanyService _companyService;
+    private readonly IUserRoleService _userRoleService;
+    private readonly IRoleService _roleService;
     private readonly HajjSystemContext _context;
 
-    public UserService(IUserRepository repository, ICompanyRepository companyRepository, IUserRoleRepository userRoleRepository, IRoleRepository roleRepository, HajjSystemContext context)
+    public UserService(IUserRepository repository, ICompanyService companyService, IUserRoleService userRoleService, IRoleService roleService, HajjSystemContext context)
     {
         _repository = repository;
-        _companyRepository = companyRepository;
-        _userRoleRepository = userRoleRepository;
-        _roleRepository = roleRepository;
+        _companyService = companyService;
+        _userRoleService = userRoleService;
+        _roleService = roleService;
         _context = context;
     }
 
-    public async Task<string> CreateCustomerAsync(CustomerUserCreationModel model)
+    public async Task<OperationResponse> CreateCustomerAsync(CustomerUserCreationModel model)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
-            var entity = new User
+            var user = new User
             {
                 FirstName = model.FirstName,
                 MiddleName = model.MiddleName,
@@ -41,39 +41,39 @@ public class UserService : IUserService
                 SeasonId = model.SeasonId
             };
 
-            var createdUser = await _repository.CreateAsync(entity);
+            var createdUser = await _repository.CreateAsync(user);
             
             // Find and assign Customer role
-            var customerRole = await _roleRepository.GetByNameAsync("Customer");
+            var customerRole = await _roleService.GetByNameAsync("Customer");
             if (customerRole == null)
             {
                 await transaction.RollbackAsync();
-                return "Customer role not found. Please contact support";
+                return new OperationResponse { Status = false, Message = "Something Went wrong. Please contact to support" };
             }
 
-            await _userRoleRepository.AddAsync(new UserRole
+            await _userRoleService.CreateAsync(new UserRole
             {
                 UserId = createdUser.Id,
                 RoleId = customerRole.Id
             });
 
             await transaction.CommitAsync();
-            return "User created successfully";
+            return new OperationResponse { Status = true, Message = "User created successfully" };
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            return $"Failed to register : {ex.Message}";
+            return new OperationResponse { Status = false, Message = $"Failed to register : {ex.Message}" };
         }
     }
 
-    public async Task<string> CreateCompanyUserAsync(CompanyUserCreationModel model)
+    public async Task<OperationResponse> CreateCompanyUserAsync(CompanyUserCreationModel model)
     {
         // Check if company with this CrNumber already exists
-        var companyExists = await _companyRepository.ExistsByCrNumberAsync(model.CrNumber);
+        var companyExists = await _companyService.ExistsByCrNumberAsync(model.CrNumber);
         if (companyExists)
         {
-            return "Company already exists. Please contact with the owner or support center";
+            return new OperationResponse { Status = false, Message = "Company already exists. Please contact with the owner or support center" };
         }
 
         using var transaction = await _context.Database.BeginTransactionAsync();
@@ -86,7 +86,7 @@ public class UserService : IUserService
                 CrNumber = model.CrNumber
             };
 
-            var createdCompany = await _companyRepository.AddAsync(company);
+            var createdCompany = await _companyService.CreateAsync(company);
 
             // Create user with company reference
             var user = new User
@@ -105,26 +105,26 @@ public class UserService : IUserService
             var createdUser = await _repository.CreateAsync(user);
 
             // Find and assign Owner role
-            var ownerRole = await _roleRepository.GetByNameAsync("Owner");
+            var ownerRole = await _roleService.GetByNameAsync("Owner");
             if (ownerRole == null)
             {
                 await transaction.RollbackAsync();
-                return "Owner role not found. Please contact support";
+                return new OperationResponse { Status = false, Message = "Owner role not found. Please contact support" };
             }
 
-            await _userRoleRepository.AddAsync(new UserRole
+            await _userRoleService.CreateAsync(new UserRole
             {
                 UserId = createdUser.Id,
                 RoleId = ownerRole.Id
             });
 
             await transaction.CommitAsync();
-            return "Company registered successfully";
+            return new OperationResponse { Status = true, Message = "Company registered successfully" };
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            return $"Failed to register company: {ex.Message}";
+            return new OperationResponse { Status = false, Message = $"Failed to register company: {ex.Message}" };
         }
     }
 
@@ -146,7 +146,7 @@ public class UserService : IUserService
         }
 
         // Get user roles from DB
-        var userRoles = await _userRoleRepository.GetByUserIdAsync(user.Id);
+        var userRoles = await _userRoleService.GetByUserIdAsync(user.Id);
         var roleNames = userRoles.Select(ur => ur.Role?.Name).Where(name => !string.IsNullOrEmpty(name)).ToList();
 
         return new LoginResponse

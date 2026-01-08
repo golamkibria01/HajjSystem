@@ -48,8 +48,7 @@ public class AuthController : ControllerBase
 
         var jwtSettings = _configuration.GetSection("JwtSettings");
 
-        var key = new SymmetricSecurityKey(
-    Encoding.UTF8.GetBytes(jwtSettings["Key"]));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
 
         var token = new JwtSecurityToken(
             issuer: jwtSettings["Issuer"],
