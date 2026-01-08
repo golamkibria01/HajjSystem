@@ -33,18 +33,13 @@ public class SeasonController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Season season)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-
         var created = await _service.CreateAsync(season);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        return Ok(created);
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Season season)
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] Season season)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        if (season.Id != id) return BadRequest("Id mismatch.");
-
         var updated = await _service.UpdateAsync(season);
         return Ok(updated);
     }
