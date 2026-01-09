@@ -17,7 +17,7 @@ public class SeasonController : ControllerBase
         _service = service;
     }
 
-    [Authorize]
+    [Authorize(Roles = "Owner,Customer")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
