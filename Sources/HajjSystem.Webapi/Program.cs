@@ -81,8 +81,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     };
 });
 
+#region CORS Configuration
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", policyBuilder =>
+        policyBuilder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithExposedHeaders("X-File-Extension"));
+});
 
+#endregion
 
 // Repositories & services
 builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
@@ -110,10 +120,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowAllOrigins");
+app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
